@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>君仔包子饅頭 - 存貨與財務管理系統需求規格書 (v13.0)</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary: #d35400;
+            --primary-hover: #b94600;
+            --secondary: #e67e22;
+            --dark-navy: #1e293b;
+            --bg-page: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #0f172a;
+            --text-sub: #475569;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --badge-green-bg: #dcfce7;
+            --badge-green-text: #166534;
+            --badge-blue-bg: #dbeafe;
+            --badge-blue-text: #1e40af;
+            --code-bg: #0f172a;
+            --code-text: #38bdf8;
+            --accent-bg: #fff7ed;
+            --accent-border: #fdba74;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Outfit', 'Noto Sans TC', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg-page);
+            color: var(--text-main);
+            line-height: 1.7;
+            margin: 0;
+            padding: 30px 15px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background-color: var(--card-bg);
+            padding: 50px 60px;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
+            border: 1px solid var(--border);
+        }
+
+        /* 標題 header */
+        .doc-header {
+            text-align: center;
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 30px;
+            margin-bottom: 40px;
+        }
+
+        .doc-logo {
+            font-size: 3.5rem;
+            margin-bottom: 10px;
+            display: inline-block;
+        }
+
+        .doc-header h1 {
+            color: var(--primary);
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin: 0 0 10px 0;
+            letter-spacing: -0.5px;
+        }
+
+        .doc-header p {
+            color: var(--text-sub);
+            font-size: 1.05rem;
+            margin: 0;
+        }
+
+        .meta-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            background-color: #f1f5f9;
+            padding: 20px;
+            border-radius: 12px;
+            margin-top: 25px;
+            font-size: 0.92rem;
+        }
+
+        .meta-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .meta-label {
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .meta-val {
+            color: var(--dark-navy);
+            font-weight: 600;
+        }
+
+        /* 章節標題 */
+        h2 {
+            color: var(--dark-navy);
+            font-size: 1.45rem;
+            margin-top: 45px;
+            margin-bottom: 20px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        h2::before {
+            content: "▌";
+            color: var(--primary);
+            font-size: 1.2rem;
+        }
+
+        h3 {
+            color: var(--primary);
+            font-size: 1.18rem;
+            margin-top: 28px;
+            margin-bottom: 12px;
+        }
+
+        p, li {
+            color: var(--text-sub);
+            font-size: 0.98rem;
+        }
+
+        ul, ol {
+            padding-left: 22px;
+            margin-bottom: 20px;
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+
+        /* 強調卡片 / Highlight Box */
+        .callout-box {
+            background-color: var(--accent-bg);
+            border-left: 4px solid var(--secondary);
+            padding: 20px 24px;
+            border-radius: 8px;
+            margin: 25px 0;
+            border-top: 1px solid var(--accent-border);
+            border-right: 1px solid var(--accent-border);
+            border-bottom: 1px solid var(--accent-border);
+        }
+
+        .callout-title {
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* 標籤 Badge */
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.82rem;
+            font-weight: 600;
+        }
+
+        .badge-green {
+            background-color: var(--badge-green-bg);
+            color: var(--badge-green-text);
+        }
+
+        .badge-blue {
+            background-color: var(--badge-blue-bg);
+            color: var(--badge-blue-text);
+        }
+
+        /* 表格樣式 */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 25px 0;
+            font-size: 0.92rem;
+        }
+
+        th {
+            background-color: #f1f5f9;
+            color: var(--dark-navy);
+            font-weight: 700;
+            text-align: left;
+            padding: 12px 16px;
+            border: 1px solid var(--border);
+        }
+
+        td {
+            padding: 12px 16px;
+            border: 1px solid var(--border);
+            color: var(--text-sub);
+        }
+
+        tr:nth-child(even) {
+            background-color: #fafafa;
+        }
+
+        /* 程式碼區塊 */
+        pre {
+            background-color: var(--code-bg);
+            color: var(--code-text);
+            padding: 20px;
+            border-radius: 10px;
+            overflow-x: auto;
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 0.88rem;
+            line-height: 1.5;
+            margin: 20px 0;
+        }
+
+        code {
+            font-family: 'Consolas', 'Courier New', monospace;
+            background-color: #f1f5f9;
+            color: var(--primary);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.88rem;
+        }
+
+        pre code {
+            background-color: transparent;
+            color: inherit;
+            padding: 0;
+        }
+
+        /* 頁尾 */
+        .doc-footer {
+            margin-top: 60px;
+            padding-top: 25px;
+            border-top: 1px solid var(--border);
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 25px 20px;
+            }
+            .meta-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- 系統標頭 -->
+        <div class="doc-header">
+            <span class="doc-logo">🥟</span>
+            <h1>君仔包子饅頭 - 存貨與財務管理系統</h1>
+            <p>軟體需求規格說明書 (Software Requirements Specification, SRS)</p>
+            
+            <div class="meta-grid">
+                <div class="meta-item">
+                    <span class="meta-label">文件版次</span>
+                    <span class="meta-val">v13.0 (雲端即時雙向對接版)</span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">專案名稱</span>
+                    <span class="meta-val">君仔包子饅頭營運系統</span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">資料庫專案</span>
+                    <span class="meta-val">jean-breakfast (RTDB)</span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">最新更新日期</span>
+                    <span class="meta-val">2026 年 8 月 12 日</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 1. 專案背景與目標 -->
+        <h2>1. 專案背景與目標 (Background & Objectives)</h2>
+        <p>傳統早餐店與麵點專賣店具備「品項流轉快、早晚班交接頻繁、對帳計算複雜」之營運特性。本系統旨在提供一套**離線優先 (Offline-First)、雙向即時同步、全自動算帳與資安防護無縫接軌**之管理工具。</p>
+        
+        <div class="callout-box">
+            <div class="callout-title">💡 系統核心發展目標</div>
+            <ul>
+                <li><strong>精準分區盤點</strong>：自動承接昨留結存，提供「架位 1~5 + 桌面」實地盤點，自動演算銷量包數與顆數。</li>
+                <li><strong>早晚班無縫對帳</strong>：早班結業現金自動滾動為晚班開市底層金，搭配硬幣紙鈔面額拆解。</li>
+                <li><strong>離線優先 0 延遲</strong>：網路斷線時系統依然 100% 可用，恢復連線後 0.4 秒極速自動同步。</li>
+                <li><strong>無露天資安防護</strong>：透過 Firebase REST API 與 Database Secret 密鑰認證，阻擋非法讀寫並消除系統警報信。</li>
+            </ul>
+        </div>
+
+        <!-- 2. 系統架構與部署環境 -->
+        <h2>2. 技術架構與部署環境 (Architecture & Deployment)</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>架構層級</th>
+                    <th>採用技術 / 服務</th>
+                    <th>功能與設計特點</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>前端介面</strong></td>
+                    <td>HTML5, Vanilla CSS3, ES6+ JS</td>
+                    <td>無輕重型框架負擔，具備極速啟動與 RWD 響應式 layout。</td>
+                </tr>
+                <tr>
+                    <td><strong>圖表分析</strong></td>
+                    <td>Chart.js (v4.x)</td>
+                    <td>視覺化繪製週/月營收、變動成本與淨利趨勢。</td>
+                </tr>
+                <tr>
+                    <td><strong>雲端資料庫</strong></td>
+                    <td>Firebase Realtime Database</td>
+                    <td>專案 ID: <code>jean-breakfast</code>，REST API 端點。</td>
+                </tr>
+                <tr>
+                    <td><strong>靜態託管</strong></td>
+                    <td>Netlify Edge CDN</td>
+                    <td>全自動網域 HTTPS 加密與無伺服器 (Serverless) 派送。</td>
+                </tr>
+                <tr>
+                    <td><strong>本機暫存</strong></td>
+                    <td>Web Storage (localStorage)</td>
+                    <td>離線優先核心，確保斷線時寫入不中斷。</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- 3. 資訊安全與存取控制 -->
+        <h2>3. 資訊安全與存取控制 (Security Architecture)</h2>
+        <p>系統拋棄傳統易洩漏帳密方式，採用 **Firebase Database Secret (系統特許密鑰)** 進行伺服器級對接。</p>
+        
+        <h3>3.1 驗證金鑰與通訊端點</h3>
+        <pre><code>const FIREBASE_DB_URL = 'https://jean-breakfast-default-rtdb.firebaseio.com';
+const FIREBASE_PATH   = '/baozi-data';
+const FIREBASE_SECRET = 'W0IDCTDBafaAIhvQEyUyH5qIZLD06tFqfShPXCbi';
+
+function getDbEndpoint() {
+    return `${FIREBASE_DB_URL}${FIREBASE_PATH}.json?auth=${FIREBASE_SECRET}`;
+}</code></pre>
+
+        <h3>3.2 Firebase 資安規則設定</h3>
+        <p>Firebase 控制台 Rules 設定為<strong>完全關閉公開權限</strong>：</p>
+        <pre><code>{
+  "rules": {
+    ".read": false,
+    ".write": false
+  }
+}</code></pre>
+        <p><span class="badge badge-green">完全安全</span> 外部未帶密鑰之連線一律拒絕 (HTTP 401)，持密鑰之合法系統可 100% 讀寫通暢。</p>
+
+        <!-- 4. 功能性需求 -->
+        <h2>4. 核心功能性需求 (Functional Requirements)</h2>
+
+        <h3>4.1 存貨盤點與庫存管理模組 (FR-1)</h3>
+        <ul>
+            <li><strong>15 大常態商品主檔</strong>：
+                <code>鮮肉包</code>, <code>蔥花捲</code>, <code>豆漿饅頭</code>, <code>起司捲</code>, <code>五穀雜糧饅頭</code>, 
+                <code>黑糖包</code>, <code>黑糖饅頭</code>, <code>芋泥包</code>, <code>芋頭饅頭</code>, <code>芋頭地瓜捲</code>, 
+                <code>南瓜饅頭</code>, <code>南瓜起司包</code>, <code>芝麻紅豆捲</code>, <code>芝麻饅頭</code>, <code>巧克力起司捲</code>。
+            </li>
+            <li><strong>昨留結存繼承</strong>：自動搜尋最近實際營業日，繼承當日之「結業剩餘」為今日「昨留結存」。</li>
+            <li><strong>分區盤點公式</strong>：
+                <br><code>結業剩餘 (包) = 架1 + 架2 + 架3 + 架4 + 架5 + 桌面</code>
+                <br><code>當日銷售 (包) = (昨留結存 + 當日入庫) - 結業剩餘</code>
+                <br><code>銷售顆數 = 當日銷售包數 × 3</code>
+            </li>
+            <li><strong>低庫存警示</strong>：結業剩餘包數低於預設警示值 (<code>< 8 包</code>) 時，自動觸發補貨警示卡片。</li>
+        </ul>
+
+        <h3>4.2 早晚班對帳與收銀管理模組 (FR-2)</h3>
+        <ul>
+            <li><strong>早上對帳公式</strong>：<code>早上營業額 = (早上結業現金 + 早上貨款支出) - 早上開市底層金</code></li>
+            <li><strong>晚班自動滾動接續</strong>：下午班開市底層金<strong>自動帶入「早上結業現金」</strong>。</li>
+            <li><strong>面額拆解計算</strong>：支援紙鈔 (1000/100)、50元、10元、5元、1元硬幣個數自動加總。</li>
+        </ul>
+
+        <h3>4.3 成本會計與損益攤提模組 (FR-3)</h3>
+        <ul>
+            <li><strong>變動成本管理</strong>：內建常用支出範本（麵粉進貨、豬肉食材、瓦斯更換、包裝耗材、水電雜支、白米糯米、地瓜粉、雞蛋等）。</li>
+            <li><strong>固定成本攤提公式</strong>：<code>單日攤提固定成本 = (每月固定成本 + 每月員工薪資) ÷ 30</code></li>
+            <li><strong>每日淨利算式</strong>：<code>每日純利 = 今日總營業額 - (當日變動成本 + 單日攤提固定成本)</code></li>
+        </ul>
+
+        <h3>4.4 雙向即時雲端同步模組 (FR-5)</h3>
+        <ul>
+            <li><strong>極速上傳防抖 (400ms)</strong>：欄位輸入完畢後 0.4 秒自動完成 REST API 推送。</li>
+            <li><strong>自動背景對接 (10s)</strong>：頁面保持開啟時，每 10 秒自動檢查一次雲端資料庫。</li>
+            <li><strong>分頁喚醒對齊</strong>：解鎖手機或切換瀏覽器分頁 (<code>visibilitychange</code> / <code>focus</code>) 時自動下拉最新數據。</li>
+            <li><strong>智慧動態對齊 (Smart Diffing)</strong>：僅更新非焦點輸入框 (<code>el !== document.activeElement</code>)，打字完全不卡頓。</li>
+            <li><strong>JSON 備份還原</strong>：支援一鍵匯出全庫 JSON 檔案，或選擇歷史 JSON 備份檔 1 秒覆寫還原。</li>
+        </ul>
+
+        <!-- 5. 測試案例與驗收標準 -->
+        <h2>5. 驗收標準與測試案例 (Test Cases)</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>編號</th>
+                    <th>測試功能項目</th>
+                    <th>操作步驟</th>
+                    <th>預期結果</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>TC-01</strong></td>
+                    <td>盤點自動連動計算</td>
+                    <td>輸入入庫 10 包，架位 1 輸入 5 包。</td>
+                    <td>結業剩餘自動算得 5 包，銷量顯示為 (昨留+10)-5 包與顆數。</td>
+                </tr>
+                <tr>
+                    <td><strong>TC-02</strong></td>
+                    <td>早晚班滾動接續</td>
+                    <td>輸入早上結業現金 $5,685。</td>
+                    <td>下午班開市底層金自動顯示為 $5,685。</td>
+                </tr>
+                <tr>
+                    <td><strong>TC-03</strong></td>
+                    <td>雙向跨裝置對接</td>
+                    <td>於電腦端修改盤點數量。</td>
+                    <td>手機端於 10 秒內或刷新時自動載入新數量，狀態保持綠色「雲端已連線」。</td>
+                </tr>
+                <tr>
+                    <td><strong>TC-04</strong></td>
+                    <td>歷史 JSON 備份還原</td>
+                    <td>點擊「選擇備份檔案還原」選取舊備份。</td>
+                    <td>提示還原成功，畫面 15 大商品與營運數據恢復為備份時之數值。</td>
+                </tr>
+                <tr>
+                    <td><strong>TC-05</strong></td>
+                    <td>Firebase 資安防護</td>
+                    <td>使用無密鑰之純網址讀取資料庫。</td>
+                    <td>伺服器傳回 <code>HTTP 401 Unauthorized</code> 阻擋未授權存取。</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- 頁尾 -->
+        <div class="doc-footer">
+            <p>君仔包子饅頭 - 存貨與財務管理系統 需求規格說明書 (v13.0)</p>
+            <p>© 2026 君仔包子饅頭 版權所有 · 技術支援：Google DeepMind Advanced Agentic Coding Team</p>
+        </div>
+
+    </div>
+
+</body>
+</html>
