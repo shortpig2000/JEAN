@@ -1050,7 +1050,7 @@ function registerEvents() {
     });
     
     // 4. 支出記帳新增與事件監聽
-    DOM.btnAddExpense.addEventListener('click', () => {
+    function handleAddExpense() {
         const nameInput = document.getElementById('input-expense-name') || DOM.inputExpenseName;
         const amountInput = document.getElementById('input-expense-amount') || DOM.inputExpenseAmount;
 
@@ -1088,19 +1088,28 @@ function registerEvents() {
         saveCurrentData();
         renderExpenseItems();
         showToast(`已新增支出項目「${name}」$${cleanAmount}元！`);
-    });
-    
-    DOM.inputExpenseAmount.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') {
-            DOM.btnAddExpense.click();
-        }
-    });
-    
-    DOM.inputExpenseName.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') {
-            DOM.inputExpenseAmount.focus();
-        }
-    });
+    }
+
+    if (DOM.btnAddExpense) {
+        DOM.btnAddExpense.addEventListener('click', handleAddExpense);
+    }
+
+    const formAddExpense = document.getElementById('form-add-expense');
+    if (formAddExpense) {
+        formAddExpense.addEventListener('submit', (e) => {
+            e.preventDefault();
+            handleAddExpense();
+        });
+    }
+
+    if (DOM.inputExpenseName) {
+        DOM.inputExpenseName.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                if (DOM.inputExpenseAmount) DOM.inputExpenseAmount.focus();
+            }
+        });
+    }
     
     DOM.inputCardMonthlyFixedCost.addEventListener('input', () => {
         let val = parseFloat(DOM.inputCardMonthlyFixedCost.value);
