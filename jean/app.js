@@ -815,6 +815,8 @@ function saveCurrentData() {
         const dtYesterday = document.getElementById(`dt-yesterday-${p.id}`);
         const dtIncoming = document.getElementById(`dt-incoming-${p.id}`);
         const dtClosing = document.getElementById(`dt-closing-${p.id}`);
+        const mbIncoming = document.getElementById(`mb-incoming-${p.id}`);
+        const mbClosing = document.getElementById(`mb-closing-${p.id}`);
         
         if (dtYesterday && dtIncoming && dtClosing) {
             // 讀取各架和桌面的值 (優先讀取有值的欄位，兼顧手機版 mb- 與電腦版 dt-)
@@ -844,8 +846,8 @@ function saveCurrentData() {
             // 直接使用 state 裡已由 updateProductSales() 正確算好的銷量
             const prevState = state.currentRecord?.inventory?.[p.id] || {};
             
-            const incomingVal = (mbIncoming && mbIncoming.value !== "") ? mbIncoming.value : (dtIncoming.value !== "" ? dtIncoming.value : "");
-            const closingVal = (mbClosing && mbClosing.value !== "") ? mbClosing.value : (dtClosing.value !== "" ? dtClosing.value : "");
+            const incomingVal = (mbIncoming && mbIncoming.value !== "") ? mbIncoming.value : (dtIncoming && dtIncoming.value !== "" ? dtIncoming.value : "");
+            const closingVal = (mbClosing && mbClosing.value !== "") ? mbClosing.value : (dtClosing && dtClosing.value !== "" ? dtClosing.value : "");
 
             inventoryData[p.id] = {
                 yesterdayBags: parseInt(dtYesterday.value) || 0,
@@ -1050,7 +1052,7 @@ function registerEvents() {
     });
     
     // 4. 支出記帳新增與事件監聽
-    DOM.btnAddExpense.addEventListener('click', () => {
+    function handleAddExpense() {
         const nameInput = document.getElementById('input-expense-name') || DOM.inputExpenseName;
         const amountInput = document.getElementById('input-expense-amount') || DOM.inputExpenseAmount;
 
@@ -1088,19 +1090,28 @@ function registerEvents() {
         saveCurrentData();
         renderExpenseItems();
         showToast(`已新增支出項目「${name}」$${cleanAmount}元！`);
-    });
-    
-    DOM.inputExpenseAmount.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') {
-            DOM.btnAddExpense.click();
-        }
-    });
-    
-    DOM.inputExpenseName.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') {
-            DOM.inputExpenseAmount.focus();
-        }
-    });
+    }
+
+    if (DOM.btnAddExpense) {
+        DOM.btnAddExpense.addEventListener('click', handleAddExpense);
+    }
+
+    const formAddExpense = document.getElementById('form-add-expense');
+    if (formAddExpense) {
+        formAddExpense.addEventListener('submit', (e) => {
+            e.preventDefault();
+            handleAddExpense();
+        });
+    }
+
+    if (DOM.inputExpenseName) {
+        DOM.inputExpenseName.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                if (DOM.inputExpenseAmount) DOM.inputExpenseAmount.focus();
+            }
+        });
+    }
     
     DOM.inputCardMonthlyFixedCost.addEventListener('input', () => {
         let val = parseFloat(DOM.inputCardMonthlyFixedCost.value);
