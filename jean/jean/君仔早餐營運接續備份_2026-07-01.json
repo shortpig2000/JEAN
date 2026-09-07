@@ -1,0 +1,302 @@
+{
+  "records": {
+    "2026-06-30": {
+      "date": "2026-06-30",
+      "inventory": {
+        "fresh_meat_bao": {
+          "yesterdayBags": 0,
+          "incomingBags": 19,
+          "closingBags": 19,
+          "salesBags": 0
+        },
+        "scallion_roll": {
+          "yesterdayBags": 0,
+          "incomingBags": 15,
+          "closingBags": 15,
+          "salesBags": 0
+        },
+        "soymilk_mantou": {
+          "yesterdayBags": 0,
+          "incomingBags": 9,
+          "closingBags": 9,
+          "salesBags": 0
+        },
+        "cheese_roll": {
+          "yesterdayBags": 0,
+          "incomingBags": 11,
+          "closingBags": 11,
+          "salesBags": 0
+        },
+        "prod_1782824404786": {
+          "yesterdayBags": 0,
+          "incomingBags": 15,
+          "closingBags": 15,
+          "salesBags": 0
+        },
+        "brown_sugar_bao": {
+          "yesterdayBags": 0,
+          "incomingBags": 11,
+          "closingBags": 11,
+          "salesBags": 0
+        },
+        "brown_sugar_mantou": {
+          "yesterdayBags": 0,
+          "incomingBags": 8,
+          "closingBags": 8,
+          "salesBags": 0
+        },
+        "prod_1782824431602": {
+          "yesterdayBags": 0,
+          "incomingBags": 6,
+          "closingBags": 6,
+          "salesBags": 0
+        },
+        "prod_1782824449670": {
+          "yesterdayBags": 0,
+          "incomingBags": 19,
+          "closingBags": 19,
+          "salesBags": 0
+        },
+        "prod_1782824471350": {
+          "yesterdayBags": 0,
+          "incomingBags": 6,
+          "closingBags": 6,
+          "salesBags": 0
+        },
+        "prod_1782824491305": {
+          "yesterdayBags": 0,
+          "incomingBags": 15,
+          "closingBags": 15,
+          "salesBags": 0
+        },
+        "prod_1782824504642": {
+          "yesterdayBags": 0,
+          "incomingBags": 13,
+          "closingBags": 13,
+          "salesBags": 0
+        },
+        "prod_1782824522630": {
+          "yesterdayBags": 0,
+          "incomingBags": 8,
+          "closingBags": 8,
+          "salesBags": 0
+        },
+        "prod_1782824533865": {
+          "yesterdayBags": 0,
+          "incomingBags": 2,
+          "closingBags": 2,
+          "salesBags": 0
+        },
+        "prod_1782824569037": {
+          "yesterdayBags": 0,
+          "incomingBags": 10,
+          "closingBags": 10,
+          "salesBags": 0
+        }
+      },
+      "morningBaseCash": 2000,
+      "morningClosingCash": 0,
+      "afternoonBaseCash": 2000,
+      "afternoonClosingCash": 0,
+      "morningRevenue": 0,
+      "afternoonRevenue": 0,
+      "revenue": 0,
+      "expenseItems": [],
+      "variableCost": 0,
+      "notes": ""
+    },
+    "2026-07-01": {
+      "date": "2026-07-01",
+      "inventory": {
+        "fresh_meat_bao": {
+          "yesterdayBags": 19,
+          "incomingBags": "",
+          "closingBags": "",
+          "salesBags": 19
+        },
+        "scallion_roll": {
+          "yesterdayBags": 15,
+          "incomingBags": "",
+          "closingBags": "",
+          "salesBags": 15
+        },
+        "soymilk_mantou": {
+          "yesterdayBags": 9,
+          "incomingBags": "",
+          "closingBags": "",
+          "salesBags": 9
+        },
+        "cheese_roll": {
+          "yesterdayBags": 11,
+          "incomingBags": "",
+          "closingBags": "",
+          "salesBags": 11
+        },
+        "prod_1782824404786": {
+          "yesterdayBags": 15,
+          "incomingBags": "",
+          "closingBags": "",
+          "salesBags": 15
+        },
+        "brown_sugar_bao": {
+          "yesterdayBags": 11,
+          "incomingBags": "",
+          "closingBags": "",
+          "salesBags": 11
+        },
+        "brown_sugar_mantou": {
+          "yesterdayBags": 8,
+          "incomingBags": "",
+          "closingBags": "",
+          "salesBags": 8
+        },
+        "prod_1782824431602": {
+          "yesterdayBags": 6,
+          "incomingBags": "",
+          "closingBags": "",
+          "salesBags": 6
+        },
+        "prod_1782824449670": {
+          "yesterdayBags": 19,
+          "incomingBags": "",
+          "closingBags": "",
+          "salesBags": 19
+        },
+        "prod_1782824471350": {
+          "yesterdayBags": 6,
+          "incomingBags": "",
+          "closingBags": "",
+          "salesBags": 6
+        },
+        "prod_1782824491305": {
+          "yesterdayBags": 15,
+          "incomingBags": "",
+          "closingBags": "",
+          "salesBags": 15
+        },
+        "prod_1782824504642": {
+          "yesterdayBags": 13,
+          "incomingBags": "",
+          "closingBags": "",
+          "salesBags": 13
+        },
+        "prod_1782824522630": {
+          "yesterdayBags": 8,
+          "incomingBags": "",
+          "closingBags": "",
+          "salesBags": 8
+        },
+        "prod_1782824533865": {
+          "yesterdayBags": 2,
+          "incomingBags": "",
+          "closingBags": "",
+          "salesBags": 2
+        },
+        "prod_1782824569037": {
+          "yesterdayBags": 10,
+          "incomingBags": "",
+          "closingBags": "",
+          "salesBags": 10
+        }
+      },
+      "morningBaseCash": 2000,
+      "morningClosingCash": 6370,
+      "afternoonBaseCash": 6370,
+      "afternoonClosingCash": 6955,
+      "morningRevenue": 4370,
+      "afternoonRevenue": 585,
+      "revenue": 4955,
+      "expenseItems": [
+        {
+          "name": "白米、糯米",
+          "amount": 720
+        },
+        {
+          "name": "地瓜粉",
+          "amount": 150
+        }
+      ],
+      "variableCost": 870,
+      "notes": ""
+    }
+  },
+  "settings": {
+    "defaultBaseCash": 2000,
+    "monthlyFixedCost": 15000,
+    "monthlyStaffSalary": 0,
+    "warningLimit": 8,
+    "products": [
+      {
+        "id": "fresh_meat_bao",
+        "name": "鮮肉包"
+      },
+      {
+        "id": "scallion_roll",
+        "name": "蔥花捲"
+      },
+      {
+        "id": "soymilk_mantou",
+        "name": "豆漿饅頭"
+      },
+      {
+        "id": "cheese_roll",
+        "name": "起司捲"
+      },
+      {
+        "id": "prod_1782824404786",
+        "name": "五穀雜糧饅頭"
+      },
+      {
+        "id": "brown_sugar_bao",
+        "name": "黑糖包"
+      },
+      {
+        "id": "brown_sugar_mantou",
+        "name": "黑糖饅頭"
+      },
+      {
+        "id": "prod_1782824431602",
+        "name": "芋泥包"
+      },
+      {
+        "id": "prod_1782824449670",
+        "name": "芋頭饅頭"
+      },
+      {
+        "id": "prod_1782824471350",
+        "name": "芋頭地瓜捲"
+      },
+      {
+        "id": "prod_1782824491305",
+        "name": "南瓜饅頭"
+      },
+      {
+        "id": "prod_1782824504642",
+        "name": "南瓜起司包"
+      },
+      {
+        "id": "prod_1782824522630",
+        "name": "芝麻紅豆捲"
+      },
+      {
+        "id": "prod_1782824533865",
+        "name": "芝麻饅頭"
+      },
+      {
+        "id": "prod_1782824569037",
+        "name": "巧克力起司捲"
+      }
+    ],
+    "expenseTemplates": [
+      "麵粉進貨",
+      "豬肉食材",
+      "瓦斯更換",
+      "包裝耗材",
+      "糖與調味品",
+      "水電雜支",
+      "白米、糯米",
+      "地瓜粉"
+    ]
+  },
+  "exportedAt": "2026-06-30T13:14:24.234Z"
+}
