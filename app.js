@@ -815,6 +815,8 @@ function saveCurrentData() {
         const dtYesterday = document.getElementById(`dt-yesterday-${p.id}`);
         const dtIncoming = document.getElementById(`dt-incoming-${p.id}`);
         const dtClosing = document.getElementById(`dt-closing-${p.id}`);
+        const mbIncoming = document.getElementById(`mb-incoming-${p.id}`);
+        const mbClosing = document.getElementById(`mb-closing-${p.id}`);
         
         if (dtYesterday && dtIncoming && dtClosing) {
             // 讀取各架和桌面的值 (優先讀取有值的欄位，兼顧手機版 mb- 與電腦版 dt-)
@@ -844,8 +846,8 @@ function saveCurrentData() {
             // 直接使用 state 裡已由 updateProductSales() 正確算好的銷量
             const prevState = state.currentRecord?.inventory?.[p.id] || {};
             
-            const incomingVal = (mbIncoming && mbIncoming.value !== "") ? mbIncoming.value : (dtIncoming.value !== "" ? dtIncoming.value : "");
-            const closingVal = (mbClosing && mbClosing.value !== "") ? mbClosing.value : (dtClosing.value !== "" ? dtClosing.value : "");
+            const incomingVal = (mbIncoming && mbIncoming.value !== "") ? mbIncoming.value : (dtIncoming && dtIncoming.value !== "" ? dtIncoming.value : "");
+            const closingVal = (mbClosing && mbClosing.value !== "") ? mbClosing.value : (dtClosing && dtClosing.value !== "" ? dtClosing.value : "");
 
             inventoryData[p.id] = {
                 yesterdayBags: parseInt(dtYesterday.value) || 0,
