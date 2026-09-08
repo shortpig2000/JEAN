@@ -1089,6 +1089,9 @@ function registerEvents() {
         
         saveCurrentData();
         renderExpenseItems();
+        if (typeof uploadToCloud === 'function') {
+            uploadToCloud();
+        }
         showToast(`已新增支出項目「${name}」$${cleanAmount}元！`);
     }
 
@@ -2557,6 +2560,9 @@ function deleteExpenseItem(index) {
         state.currentRecord.expenseItems = items;
         saveCurrentData();
         renderExpenseItems();
+        if (typeof uploadToCloud === 'function') {
+            uploadToCloud();
+        }
         showToast("已成功刪除支出項目！");
     }
 }
