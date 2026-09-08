@@ -12,12 +12,17 @@ function getDbEndpoint() {
 }
 
 let isSyncing    = false;
+let isPendingUpload = false;
 let syncTimeout  = null;
 
 /* ─────────────────────────────
    上傳到雲端
 ───────────────────────────── */
 async function uploadToCloud() {
+    if (syncTimeout) {
+        clearTimeout(syncTimeout);
+        syncTimeout = null;
+    }
     if (isSyncing) return;
     isSyncing = true;
     setSyncUI('syncing');
@@ -36,6 +41,7 @@ async function uploadToCloud() {
         });
 
         if (res.ok) {
+            isPendingUpload = false;
             const now = new Date().toISOString();
             localStorage.setItem('lastSyncTime', now);
             setSyncUI('success', now);
@@ -59,6 +65,8 @@ async function uploadToCloud() {
    從雲端下載（開啟時同步）
 ───────────────────────────── */
 async function downloadFromCloud() {
+    if (isSyncing || isPendingUpload || syncTimeout) return null;
+
     setSyncUI('syncing');
     if (typeof updateSyncStatus === 'function') updateSyncStatus('connecting');
     try {
@@ -75,11 +83,40 @@ async function downloadFromCloud() {
             return null;
         }
 
-        // 以雲端資料為準更新本地 (比對是否有異動，避免無謂重繪)
+        if (isPendingUpload || syncTimeout) return null;
+
+        // 以雲端資料與本地資料做智慧合併 (特別防止本地剛新增的支出明細被舊雲端覆蓋)
         let hasChanges = false;
         if (data.records && typeof data.records === 'object') {
             const key = typeof DB_KEYS !== 'undefined' ? DB_KEYS.RECORDS : 'jean_breakfast_records_multi_shift_items';
             const localStr = localStorage.getItem(key) || '';
+            let localRecords = {};
+            try { localRecords = JSON.parse(localStr); } catch (e) {}
+
+            let mergedDataNeeded = false;
+            // 智慧比對支出明細：若本地有支出項目而雲端沒有或較少，保留本地項目並補推雲端
+            Object.keys(localRecords).forEach(dateKey => {
+                const localRec = localRecords[dateKey];
+                const cloudRec = data.records[dateKey];
+                if (localRec && localRec.expenseItems && localRec.expenseItems.length > 0) {
+                    if (!cloudRec) {
+                        data.records[dateKey] = localRec;
+                        mergedDataNeeded = true;
+                    } else {
+                        const cloudItems = cloudRec.expenseItems || [];
+                        if (localRec.expenseItems.length > cloudItems.length) {
+                            cloudRec.expenseItems = localRec.expenseItems;
+                            cloudRec.variableCost = localRec.expenseItems.reduce((sum, i) => sum + (parseFloat(i.amount) || 0), 0);
+                            mergedDataNeeded = true;
+                        }
+                    }
+                }
+            });
+
+            if (mergedDataNeeded) {
+                setTimeout(() => uploadToCloud(), 100);
+            }
+
             const cloudStr = JSON.stringify(data.records);
             if (localStr !== cloudStr) {
                 localStorage.setItem(key, cloudStr);
@@ -111,11 +148,12 @@ async function downloadFromCloud() {
 }
 
 /* ─────────────────────────────
-   延遲上傳（每次存檔後 2 秒再同步，避免頻繁請求）
+   延遲上傳（每次存檔後 500ms 再同步，避免頻繁請求）
 ───────────────────────────── */
 function scheduleCloudUpload() {
+    isPendingUpload = true;
     if (syncTimeout) clearTimeout(syncTimeout);
-    syncTimeout = setTimeout(() => uploadToCloud(), 1500);
+    syncTimeout = setTimeout(() => uploadToCloud(), 500);
 }
 
 /* ─────────────────────────────

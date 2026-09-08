@@ -1089,6 +1089,9 @@ function registerEvents() {
         
         saveCurrentData();
         renderExpenseItems();
+        if (typeof uploadToCloud === 'function') {
+            uploadToCloud();
+        }
         showToast(`已新增支出項目「${name}」$${cleanAmount}元！`);
     }
 
@@ -2557,6 +2560,9 @@ function deleteExpenseItem(index) {
         state.currentRecord.expenseItems = items;
         saveCurrentData();
         renderExpenseItems();
+        if (typeof uploadToCloud === 'function') {
+            uploadToCloud();
+        }
         showToast("已成功刪除支出項目！");
     }
 }
@@ -2734,12 +2740,30 @@ function renderHistoryQuery() {
         
         const daysOfWeek = ['日', '一', '二', '三', '四', '五', '六'];
         
-        monthDaysData.forEach(dayData => {
+        let weekRev = 0;
+        let weekCost = 0;
+        let weekProfit = 0;
+        let weekSales = 0;
+        let weekDaysCount = 0;
+        let weekStartDateStr = null;
+        let weekIndex = 1;
+
+        monthDaysData.forEach((dayData, idx) => {
             const dateParts = dayData.dateStr.split('-');
             const dateObj = new Date(dateParts[0], dateParts[1] - 1, dateParts[2]);
-            const dayName = daysOfWeek[dateObj.getDay()];
+            const dayOfWeek = dateObj.getDay();
+            const dayName = daysOfWeek[dayOfWeek];
             const shortDateStr = `${dateParts[1]}/${dateParts[2]} (${dayName})`;
             
+            if (!weekStartDateStr) {
+                weekStartDateStr = `${dateParts[1]}/${dateParts[2]}`;
+            }
+            weekDaysCount++;
+            weekRev += dayData.revenue;
+            weekCost += dayData.totalCost;
+            weekProfit += dayData.profit;
+            weekSales += dayData.salesBags;
+
             // 電腦版行
             const tr = document.createElement('tr');
             if (!dayData.hasData) {
@@ -2810,6 +2834,78 @@ function renderHistoryQuery() {
                 `;
             }
             DOM.historyMobileList.appendChild(card);
+
+            // 判斷是否為週日 (Sunday) 或該月最後一天 ➔ 插入「週小計」
+            const isSunday = dayOfWeek === 0;
+            const isLastDay = idx === monthDaysData.length - 1;
+
+            if (isSunday || isLastDay) {
+                const weekEndDateStr = `${dateParts[1]}/${dateParts[2]}`;
+                const weekRangeLabel = `📌 ${weekStartDateStr} ~ ${weekEndDateStr} (第 ${weekIndex} 週小計)`;
+                const profitClass = weekProfit >= 0 ? "positive" : "negative";
+
+                // --- 1. 電腦版週小計行 ---
+                const weekTr = document.createElement('tr');
+                weekTr.className = 'history-week-summary-row';
+                weekTr.style.backgroundColor = '#fff8f0';
+                weekTr.style.borderTop = '2px dashed #ffa726';
+                weekTr.style.borderBottom = '2px dashed #ffa726';
+                weekTr.style.fontWeight = 'bold';
+                
+                weekTr.innerHTML = `
+                    <td style="color: #e65100; font-weight: 800;">${weekRangeLabel}</td>
+                    <td style="color: #e65100;">${weekSales.toLocaleString()} 包 <span class="val-unit">(${(weekSales * 3).toLocaleString()} 顆)</span></td>
+                    <td class="val-revenue" style="font-weight: 800; color: #2e7d32;">$${weekRev.toLocaleString()}</td>
+                    <td class="val-cost" style="color: #c62828;">$${weekCost.toLocaleString()}</td>
+                    <td class="val-profit ${profitClass}" style="font-weight: 800;">$${weekProfit.toLocaleString()}</td>
+                    <td colspan="2" style="font-size: 0.78rem; color: #f57c00; text-align: left;">週營業額與淨利小計 (${weekDaysCount}天)</td>
+                `;
+                DOM.historyTableTbody.appendChild(weekTr);
+
+                // --- 2. 手機版週小計卡片 ---
+                const weekCard = document.createElement('div');
+                weekCard.className = 'mobile-history-card week-summary-card';
+                weekCard.style.background = 'linear-gradient(135deg, #fff8f0 0%, #ffe0b2 100%)';
+                weekCard.style.border = '1.5px solid #ffa726';
+                weekCard.style.borderRadius = '12px';
+                weekCard.style.margin = '14px 0 18px 0';
+                weekCard.style.padding = '12px 14px';
+                weekCard.style.boxShadow = '0 2px 8px rgba(230,81,0,0.12)';
+
+                weekCard.innerHTML = `
+                    <div style="font-size: 0.9rem; font-weight: 800; color: #e65100; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center;">
+                        <span>${weekRangeLabel}</span>
+                        <span style="font-size: 0.75rem; background: #ffe0b2; color: #e65100; padding: 2px 6px; border-radius: 6px; font-weight: 800;">週小計</span>
+                    </div>
+                    <div class="m-history-grid" style="grid-template-columns: repeat(3, 1fr); gap: 6px;">
+                        <div class="m-history-grid-item" style="background: rgba(255,255,255,0.85); padding: 6px 4px; border-radius: 6px; text-align: center;">
+                            <span class="m-history-grid-label" style="font-size: 0.68rem; color: #e65100;">週營業額</span>
+                            <span class="m-history-grid-val" style="color: #2e7d32; font-size: 0.9rem; font-weight: 800;">$${weekRev.toLocaleString()}</span>
+                        </div>
+                        <div class="m-history-grid-item" style="background: rgba(255,255,255,0.85); padding: 6px 4px; border-radius: 6px; text-align: center;">
+                            <span class="m-history-grid-label" style="font-size: 0.68rem; color: #c62828;">週總支出</span>
+                            <span class="m-history-grid-val" style="color: #c62828; font-size: 0.88rem; font-weight: 700;">$${weekCost.toLocaleString()}</span>
+                        </div>
+                        <div class="m-history-grid-item" style="background: rgba(255,255,255,0.85); padding: 6px 4px; border-radius: 6px; text-align: center;">
+                            <span class="m-history-grid-label" style="font-size: 0.68rem; color: #e65100;">週淨利</span>
+                            <span class="m-history-grid-val val-profit ${profitClass}" style="font-size: 0.9rem; font-weight: 800;">$${weekProfit.toLocaleString()}</span>
+                        </div>
+                    </div>
+                    <div style="font-size: 0.78rem; font-weight: 700; color: #d84315; text-align: right; margin-top: 8px;">
+                        📦 本週銷售總量：${weekSales.toLocaleString()} 包 (${(weekSales * 3).toLocaleString()} 顆)
+                    </div>
+                `;
+                DOM.historyMobileList.appendChild(weekCard);
+
+                // 重置週累計
+                weekRev = 0;
+                weekCost = 0;
+                weekProfit = 0;
+                weekSales = 0;
+                weekDaysCount = 0;
+                weekStartDateStr = null;
+                weekIndex++;
+            }
         });
         
     } else {
