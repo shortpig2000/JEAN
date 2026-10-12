@@ -14,6 +14,20 @@
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="-1">
     
+    <!-- 自動清除舊版 Service Worker 與快取快照 -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.getRegistrations().then(function(registrations) {
+                for (let r of registrations) { r.unregister(); }
+            });
+        }
+        if ('caches' in window) {
+            caches.keys().then(function(names) {
+                for (let name of names) { caches.delete(name); }
+            });
+        }
+    </script>
+
     <!-- CSS Style -->
     <link rel="stylesheet" href="style.css?v=23.0">
 </head>
@@ -59,7 +73,7 @@
                 <button id="sidebar-btn-backup" class="sidebar-action-btn">
                     <span>💾 資料備份與還原</span>
                 </button>
-                <div class="sidebar-version">v23.0 (Firebase 雲端即時同步)</div>
+                <div class="sidebar-version">v25.0 (Firebase 雲端即時同步)</div>
             </div>
         </aside>
 
@@ -641,7 +655,7 @@
     <div id="modal-settings" class="modal-overlay">
         <div class="modal-box">
             <div class="modal-header">
-                <h2>系統參數設定 <span style="font-size: 0.75rem; color: var(--text-light); font-weight: normal;">v23.0</span></h2>
+                <h2>系統參數設定 <span style="font-size: 0.75rem; color: var(--text-light); font-weight: normal;">v25.0</span></h2>
                 <button class="modal-close-btn">&times;</button>
             </div>
             <div class="modal-box-scroll-body">
@@ -773,8 +787,8 @@
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="db.js?v=23.0"></script>
-    <script src="sync.js?v=23.0"></script>
-    <script src="app.js?v=23.0"></script>
+    <script src="db.js?v=25.0"></script>
+    <script src="sync.js?v=25.0"></script>
+    <script src="app.js?v=25.0"></script>
 </body>
 </html>

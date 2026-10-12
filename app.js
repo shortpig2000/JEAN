@@ -296,12 +296,12 @@ function renderInventoryFields() {
     products.forEach(p => {
         const prodData = inventory[p.id] || { yesterdayBags: 0, incomingBags: "", closingBags: "", salesBags: 0 };
         const rawShelves = prodData.shelves || ["", "", "", "", ""];
-        const shelves = rawShelves.map(s => (s === 0 || s === "0" || s === "") ? "" : s);
-        const rawTable = prodData.table !== undefined ? prodData.table : "";
-        const table = (rawTable === 0 || rawTable === "0" || rawTable === "") ? "" : rawTable;
+        const shelves = rawShelves.map(s => (s === "" || s === undefined || s === null) ? "" : s);
+        const rawTable = prodData.table !== undefined && prodData.table !== null ? prodData.table : "";
+        const table = (rawTable === "") ? "" : rawTable;
         const rawIncoming = (prodData.incomingBags !== '' && prodData.incomingBags !== undefined && prodData.incomingBags !== null) ? prodData.incomingBags : '';
-        const incoming = (rawIncoming === 0 || rawIncoming === "0" || rawIncoming === "") ? "" : rawIncoming;
-        const closingBags = prodData.closingBags !== undefined ? prodData.closingBags : "";
+        const incoming = (rawIncoming === "") ? "" : rawIncoming;
+        const closingBags = (prodData.closingBags !== "" && prodData.closingBags !== undefined && prodData.closingBags !== null) ? prodData.closingBags : "";
         
         const hasClosing = closingBags !== "" && closingBags !== undefined && closingBags !== null;
         const salesText = hasClosing ? prodData.salesBags : "-";
@@ -329,9 +329,9 @@ function renderInventoryFields() {
             <td><input type="number" id="dt-shelf5-${p.id}" value="${shelves[4]}" class="table-compact-input" min="0" step="1" pattern="[0-9]*" inputmode="numeric"></td>
             <!-- 桌面輸入框 (黃色) -->
             <td><input type="number" id="dt-table-${p.id}" value="${table}" class="table-compact-input table-compact-input-yellow" min="0" step="1" pattern="[0-9]*" inputmode="numeric"></td>
-            <!-- 結業剩餘合計框 (紅色) -->
+            <!-- 結業剩餘合計框 (可直接輸入或由各架自動加總) -->
             <td>
-                <input type="number" id="dt-closing-${p.id}" value="${(closingBags !== '' && closingBags !== undefined && closingBags !== null) ? closingBags : ''}" class="table-compact-input table-compact-input-green" readonly>
+                <input type="number" id="dt-closing-${p.id}" value="${(closingBags !== '' && closingBags !== undefined && closingBags !== null) ? closingBags : ''}" class="table-compact-input table-compact-input-green" min="0" step="1" pattern="[0-9]*" inputmode="numeric">
             </td>
             <td>
                 <span id="dt-sales-bags-${p.id}" class="tbl-sales-val">${salesText}</span> <span id="dt-sales-bags-unit-${p.id}" class="val-unit">${unitTextBags}</span>
@@ -389,7 +389,7 @@ function renderInventoryFields() {
             <div class="mc-footer">
                 <div class="mc-closing">
                     <span class="mc-closing-label">結業剩餘</span>
-                    <input type="number" id="mb-closing-${p.id}" value="${(closingBags !== '' && closingBags !== undefined && closingBags !== null) ? closingBags : ''}" readonly class="mc-closing-input">
+                    <input type="number" id="mb-closing-${p.id}" value="${(closingBags !== '' && closingBags !== undefined && closingBags !== null) ? closingBags : ''}" min="0" inputmode="numeric" class="mc-closing-input">
                     <span style="font-size:0.75rem;color:#2e7d32;">包</span>
                 </div>
                 <div class="mc-sales">
@@ -498,6 +498,58 @@ function setupProductInputEvents(productId) {
         mbTable.value = val;
         recalculateClosingAndSales(productId);
     });
+
+    // 結業剩餘直接輸入事件 (支援直接輸入 0 或手動覆寫結存)
+    const dtClosing = document.getElementById(`dt-closing-${productId}`);
+    const mbClosing = document.getElementById(`mb-closing-${productId}`);
+
+    if (dtClosing) {
+        dtClosing.addEventListener('input', (e) => {
+            let val = e.target.value;
+            if (val !== "") {
+                if (parseInt(val) < 0) val = "0";
+                if (val.includes('.')) val = Math.round(parseFloat(val)).toString();
+            }
+            if (mbClosing) mbClosing.value = val;
+            dtClosing.value = val;
+            updateClosingInputColor(productId, val);
+            const incValStr = (mbIncoming && mbIncoming.value !== "") ? mbIncoming.value : (dtIncoming ? dtIncoming.value : "");
+            
+            const shelfVals = [];
+            for (let i = 1; i <= 5; i++) {
+                const sEl = document.getElementById(`dt-shelf${i}-${productId}`);
+                shelfVals.push(sEl && sEl.value !== "" ? parseInt(sEl.value) : "");
+            }
+            const tEl = document.getElementById(`dt-table-${productId}`);
+            const tableVal = tEl && tEl.value !== "" ? parseInt(tEl.value) : "";
+            
+            updateProductSales(productId, incValStr, val !== "" ? parseInt(val) : "", shelfVals, tableVal);
+        });
+    }
+
+    if (mbClosing) {
+        mbClosing.addEventListener('input', (e) => {
+            let val = e.target.value;
+            if (val !== "") {
+                if (parseInt(val) < 0) val = "0";
+                if (val.includes('.')) val = Math.round(parseFloat(val)).toString();
+            }
+            if (dtClosing) dtClosing.value = val;
+            mbClosing.value = val;
+            updateClosingInputColor(productId, val);
+            const incValStr = (mbIncoming && mbIncoming.value !== "") ? mbIncoming.value : (dtIncoming ? dtIncoming.value : "");
+            
+            const shelfVals = [];
+            for (let i = 1; i <= 5; i++) {
+                const sEl = document.getElementById(`mb-shelf${i}-${productId}`);
+                shelfVals.push(sEl && sEl.value !== "" ? parseInt(sEl.value) : "");
+            }
+            const tEl = document.getElementById(`mb-table-${productId}`);
+            const tableVal = tEl && tEl.value !== "" ? parseInt(tEl.value) : "";
+            
+            updateProductSales(productId, incValStr, val !== "" ? parseInt(val) : "", shelfVals, tableVal);
+        });
+    }
 }
 
 function recalculateClosingAndSales(productId) {
@@ -509,7 +561,7 @@ function recalculateClosingAndSales(productId) {
     const incomingValStr = (mbIncoming && mbIncoming.value !== "") ? mbIncoming.value : (dtIncoming ? dtIncoming.value : "");
 
     const shelfVals = [];
-    let hasAnyInput = false;
+    let hasAnyShelfOrTableInput = false;
     
     for (let i = 1; i <= 5; i++) {
         const dtEl = document.getElementById(`dt-shelf${i}-${productId}`);
@@ -525,7 +577,7 @@ function recalculateClosingAndSales(productId) {
             let parsedVal = parseInt(valStr);
             if (isNaN(parsedVal)) parsedVal = 0;
             shelfVals.push(parsedVal);
-            hasAnyInput = true;
+            hasAnyShelfOrTableInput = true;
         } else {
             shelfVals.push("");
         }
@@ -544,28 +596,41 @@ function recalculateClosingAndSales(productId) {
     if (tableStr !== "") {
         tableVal = parseInt(tableStr);
         if (isNaN(tableVal)) tableVal = 0;
-        hasAnyInput = true;
+        hasAnyShelfOrTableInput = true;
     }
     
-    if (!hasAnyInput) {
-        if (dtClosing) dtClosing.value = "";
-        if (mbClosing) mbClosing.value = "";
-        updateClosingInputColor(productId, "");
-        updateProductSales(productId, incomingValStr, "", [], "");
+    // 如果架位或桌面有輸入任何值（包含 0），以架位+桌面加總自動計算結存
+    if (hasAnyShelfOrTableInput) {
+        let sum = 0;
+        shelfVals.forEach(v => {
+            if (v !== "") sum += v;
+        });
+        if (tableVal !== "") sum += tableVal;
+        
+        if (dtClosing) dtClosing.value = sum;
+        if (mbClosing) mbClosing.value = sum;
+        
+        updateClosingInputColor(productId, sum);
+        updateProductSales(productId, incomingValStr, sum, shelfVals, tableVal);
         return;
     }
     
-    let sum = 0;
-    shelfVals.forEach(v => {
-        if (v !== "") sum += v;
-    });
-    if (tableVal !== "") sum += tableVal;
+    // 若架位與桌面皆為空，檢查結業剩餘輸入框本身是否有人手動填寫 (例如直接填 0 或其他數字)
+    const manualClosingStr = (mbClosing && mbClosing.value !== "") ? mbClosing.value : (dtClosing && dtClosing.value !== "" ? dtClosing.value : "");
+    if (manualClosingStr !== "") {
+        const manualVal = parseInt(manualClosingStr) || 0;
+        if (dtClosing) dtClosing.value = manualVal;
+        if (mbClosing) mbClosing.value = manualVal;
+        updateClosingInputColor(productId, manualVal);
+        updateProductSales(productId, incomingValStr, manualVal, shelfVals, tableVal);
+        return;
+    }
     
-    dtClosing.value = sum;
-    mbClosing.value = sum;
-    
-    updateClosingInputColor(productId, sum);
-    updateProductSales(productId, dtIncoming.value, sum, shelfVals, tableVal);
+    // 完全沒有任何輸入時，清空結存與銷量
+    if (dtClosing) dtClosing.value = "";
+    if (mbClosing) mbClosing.value = "";
+    updateClosingInputColor(productId, "");
+    updateProductSales(productId, incomingValStr, "", [], "");
 }
 
 function updateProductSales(productId, incoming, closing, shelves, table) {
@@ -3147,7 +3212,7 @@ function refreshAppState() {
             const updateVal = (id, newVal) => {
                 const el = document.getElementById(id);
                 if (el && el !== activeEl) {
-                    const displayVal = (newVal === 0 || newVal === "0" || newVal === undefined || newVal === null) ? "" : newVal;
+                    const displayVal = (newVal === undefined || newVal === null || newVal === "") ? "" : newVal;
                     el.value = displayVal;
                 }
             };
