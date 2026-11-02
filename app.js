@@ -331,7 +331,7 @@ function renderInventoryFields() {
             <td><input type="number" id="dt-table-${p.id}" value="${table}" class="table-compact-input table-compact-input-yellow" min="0" step="1" pattern="[0-9]*" inputmode="numeric"></td>
             <!-- 結業剩餘合計框 (可直接輸入或由各架自動加總) -->
             <td>
-                <input type="number" id="dt-closing-${p.id}" value="${(closingBags !== '' && closingBags !== undefined && closingBags !== null) ? closingBags : ''}" class="table-compact-input table-compact-input-green" min="0" step="1" pattern="[0-9]*" inputmode="numeric">
+                <input type="number" id="dt-closing-${p.id}" value="${(closingBags !== '' && closingBags !== undefined && closingBags !== null) ? closingBags : ''}" class="table-compact-input" min="0" step="1" pattern="[0-9]*" inputmode="numeric">
             </td>
             <td>
                 <span id="dt-sales-bags-${p.id}" class="tbl-sales-val">${salesText}</span> <span id="dt-sales-bags-unit-${p.id}" class="val-unit">${unitTextBags}</span>
@@ -2638,42 +2638,34 @@ function deleteExpenseItem(index) {
 function updateClosingInputColor(productId, value) {
     const dtClosing = document.getElementById(`dt-closing-${productId}`);
     const mbClosing = document.getElementById(`mb-closing-${productId}`);
+    const limit = parseInt(state.settings?.warningLimit) || 8;
     
-    // 如果輸入為空，不判定為小於8（避免尚未輸入時就顯示紅色警示）
+    // 如果輸入為空，呈現未填寫空白樣式
     if (value === "" || value === null || value === undefined) {
-        if (dtClosing) {
-            dtClosing.classList.remove('input-closing-red');
-            dtClosing.classList.add('input-closing-blue');
-        }
-        if (mbClosing) {
-            mbClosing.classList.remove('input-closing-red');
-            mbClosing.classList.add('input-closing-blue');
-        }
+        [dtClosing, mbClosing].forEach(el => {
+            if (el) {
+                el.classList.remove('input-closing-red', 'input-closing-green', 'input-closing-blue', 'table-compact-input-green');
+                el.classList.add('input-closing-empty');
+            }
+        });
         return;
     }
     
     const val = parseInt(value);
-    const isWarning = !isNaN(val) && val < (state.settings.warningLimit || 8);
+    const isWarning = !isNaN(val) && val < limit;
     
-    if (dtClosing) {
-        if (isWarning) {
-            dtClosing.classList.remove('input-closing-blue');
-            dtClosing.classList.add('input-closing-red');
-        } else {
-            dtClosing.classList.remove('input-closing-red');
-            dtClosing.classList.add('input-closing-blue');
+    [dtClosing, mbClosing].forEach(el => {
+        if (el) {
+            el.classList.remove('input-closing-empty', 'table-compact-input-green', 'input-closing-blue');
+            if (isWarning) {
+                el.classList.remove('input-closing-green');
+                el.classList.add('input-closing-red');
+            } else {
+                el.classList.remove('input-closing-red');
+                el.classList.add('input-closing-green');
+            }
         }
-    }
-    
-    if (mbClosing) {
-        if (isWarning) {
-            mbClosing.classList.remove('input-closing-blue');
-            mbClosing.classList.add('input-closing-red');
-        } else {
-            mbClosing.classList.remove('input-closing-red');
-            mbClosing.classList.add('input-closing-blue');
-        }
-    }
+    });
 }
 
 window.addEventListener('resize', () => {
@@ -3232,6 +3224,7 @@ function refreshAppState() {
 
             updateVal(`dt-closing-${p.id}`, closing);
             updateVal(`mb-closing-${p.id}`, closing);
+            updateClosingInputColor(p.id, closing);
 
             const hasClosing = closing !== "" && closing !== undefined && closing !== null;
             const salesText = hasClosing ? prodData.salesBags : "-";
